@@ -1,0 +1,86 @@
+---
+title: "Week 6"
+author: "Rachael Valdez"
+date: "9/27/2017"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
+```
+
+## R Functions
+
+
+*functions made w/ fucntion function
+
+```{r functionExample}
+myFunction <- function(x){
+  print(x)
+}
+```
+
+The above code creates a new function `myfunction`. It takes a single argument `x`, and when the fucntion executes, it will print content of `x ` to console (or output documnet)
+
+```{r functionEx2}
+myFunction(x = 2)
+
+myFunction(x = c(1,2,3,4))
+```
+
+This basic fucntion is fairly useless, since it recreaes the existing `print()` function. Normally you owuld insert more code in curly braces to do  operations
+
+
+
+```{r fucntionEx3}
+myFunction2 <- function(x, y) {
+  z = x + y
+  z
+}
+
+result = myFunction2(2,4)
+print(result)
+```
+
+Note that in code above, we run fuction and assign results to new variable callded `result`. If we run function w/o assigning it a results to a varialbe it owuld just print out.
+The ocntents of `z` to the console
+
+```{r SEfunction}
+mySE <- function(x){
+  #assume the input x is a vector of numbers
+  #First calculate variance
+  myvar = var(x)
+  #then calc number of values in the samples
+  myn = length(x)
+  #bext cakc tge sq riit if varuabcem duvude bt sanoke suze
+  mySE = sqrt( myvar/myn)
+  #the value returned will be last object created in the function, in this case mySE
+  mySE #repeating just the last variable here will cause the result to print out when run
+}
+```
+
+Now we can test the funciton
+```{r testSE}
+x = c(1,1,3,3,6,6)
+mySE(x) #result should be 0.9189366
+```
+
+*There are functions in R that will only take the name of another function as an argument. ex aggregate function.
+
+```{r aggregateCustomFunction}
+#make a practice data frame
+mydf = data.frame(Group = c(rep('A', 6), rep('B', 6)),
+                  Values = c(1,2,3,4,5,6,11,22,33,44,55,66))
+mydf #print it out
+#calc standard error of group A (row 1-6)
+mySE(mydf$Values[1:6])
+#calc SE of group B (rows1-6)
+mySE(mydf$Values[1:6])
+
+#now our custom mySE function inside aggregate to accomplish same thing
+aggregate(Values~Group, data = mydf, FUN = mySE)
+```
+
+
+
+

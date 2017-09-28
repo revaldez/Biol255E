@@ -1,0 +1,80 @@
+---
+title: "HW3"
+author: "Rachael Valdez"
+date: "9/19/2017"
+output: 
+  word_document:
+    fig_caption: yes
+  pdf_document: default
+  html_document:
+    fig_caption: yes
+---
+## R setup
+Will use function 'knitr' so we can use function 'kable' later on.
+'fig.align' is used to center figures.
+
+```{r setup, include=FALSE}
+library(knitr) # include here so we can use kable() function later
+knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
+# knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Set Working Directory
+This will set the filepath representing the current working directory.
+
+
+## Data Import
+Next I will import the data from the california-state-university-2015.csv file. 
+
+```{r data import}
+df = read.csv("../data/california-state-university-2015.csv")
+```
+
+## Data separation
+I will separate the data for accounting technician I, II and III.
+
+```{r data segregation by job title}
+ATI = df[df$Job.Title == 'ACCOUNTING TECHNICIAN I',]
+ATII = df[df$Job.Title == 'ACCOUNTING TECHNICIAN II',]
+ATIII = df[df$Job.Title == 'ACCOUNTING TECHNICIAN III',]
+```
+
+## Merging data for accounting technician I, II and III
+Data for accounting technician I, II and III were separated into 3 data sets. All three will be merged using the function 'rbind'.
+
+```{r bind}
+ATS = rbind(ATI, ATII, ATIII)
+```
+
+## Factors
+Function 'factor' is used to order factors of the categorical data.
+```{r factor}
+ATS$Job.Title = factor(ATS$Job.Title)
+```
+
+## Plot
+Now we will make a boxplot for accounting technicians I, II and III showing the distribution of saleries in each job category. 
+
+```{r boxplot}
+boxplot(ATS$Base.Pay~ATS$Job.Title, 
+        names = c("ATI", "ATII", "ATIII"),
+        main = "Salary Distribution of Accounting Technician\'s",
+        ylab = 'Thousands',
+        xlab = 'Accounting Technician(AT)',
+        col = c('lavender', 'violet', 'purple'))
+```
+
+## Results
+Print out R results of mean calculation to output.
+
+```{r mean calculation}
+mymean=(aggregate(ATS$Base.Pay~ATS$Job.Title, 
+                data = ATS, FUN = mean))
+#mymean prints output
+```
+
+## Mean Table
+Will layout means in a table
+```{r mean Table, results='asis'}
+kable(mymean, caption = 'Mean pay per AT') 
+```
