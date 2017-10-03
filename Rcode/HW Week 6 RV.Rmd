@@ -2,9 +2,15 @@
 title: "HW Week6"
 author: "Rachael Valdez"
 date: "9/27/2017"
-output: word_document
+output:
+  word_document: default
+  pdf_document: default
 ---
 
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 ```{r tideFunction}
 # coops_tide_ht_retrieval.R
@@ -133,7 +139,7 @@ if (length(grep('^Error',all.lines))>0) { #check for error in retrieval
 			"Flag.Flat.Tol","Flag.Rate.Tol","Flag.Temp.Tol")
 	
 	#Uncomment this if you want to plot the data
-#	plot(df$TimeUTC, df$TideHT, type = "l",
+#plot(df$TimeUTC, df$TideHT, type = "l",
 #			xlab = "Date",ylab = "Tide Height, meters")
 	
 	#Save data automatically to a .csv file. 
@@ -157,22 +163,50 @@ invisible(df)
 } #end of function definition NOAAfunction
 ```
 
-```{r plotFunction}
-#creating ploting function for tides
-plotTides <- function(df) {
-  plot(x = df$TimeUTC, y = df$TideHT, type = 'l',
-       main = "Tide Height in January 08",
+```{r grabJan, cache=TRUE, message=FALSE, warning=FALSE}
+jan = NOAAfunction(station = 9413450, startDate = 20080101, endDate = 20080131)
+
+```
+
+```{r plotFunction1}
+#creating ploting function for tides in Jan 08
+ptjan <- function(df) {
+  plot(x = jan$TimeUTC, y = jan$TideHT, type = 'l',
+       main = "Tide Height in January 2008",
+       ylab = 'TideHt, m',
+       xlab = 'Date',
+       col='blue') 
+  }
+```
+
+```{r grabApr, cache=TRUE, message=FALSE, warning=FALSE}
+apr = NOAAfunction(station = 9413450, startDate = 20080401, endDate = 20080430)
+
+```
+
+```{r plotFunction2}
+#creating ploting function for tides in Apr 08
+ptapr <- function(df) {
+  plot(x = apr$TimeUTC, y = apr$TideHT, type = 'l',
+       main = "Tide Height in April 2008",
        ylab = 'TideHt, m',
        xlab = 'Date',
        col='turquoise') 
   }
 ```
 
-```{r grabJan, cache=TRUE, message=FALSE, warning=FALSE}
-jan = NOAAfunction(station = 9413450, startDate = 20080131, endDate = 20080212)
+```{r grabOct, cache=TRUE, message=FALSE, warning=FALSE}
+oct = NOAAfunction(station = 9413450, startDate = 20081001, endDate = 20081031)
 
 ```
 
-
-
-
+```{r plotFunction3}
+#creating ploting function for tides in Oct 08
+ptoct <- function(df) {
+  plot(x = oct$TimeUTC, y = oct$TideHT, type = 'l',
+       main = "Tide Height in October 2008",
+       ylab = 'TideHt, m',
+       xlab = 'Date',
+       col='green') 
+}
+```
