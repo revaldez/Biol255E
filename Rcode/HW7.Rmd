@@ -1,0 +1,83 @@
+---
+title: "HW7"
+author: "Rachael Valdez"
+date: "10/10/2017"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Data Import
+We begin by importing the data from the california-state-university-2015.csv file and using as.character to test for object of type "character".
+
+```{r dataimport}
+df = read.csv("../data/california-state-university-2015.csv")
+df$Employee.Name = as.character(df$Employee.Name)
+```
+
+## Employees with the name Martinez
+
+```{r EmployeeMartinez}
+my_pattern = "Martinez"
+NameMartinez = df$Employee.Name[grepl(my_pattern, df$Employee.Name)]
+print(NameMartinez)
+```
+
+## Employees whose name starts with the letters "Wil"
+
+```{r BeginningWil}
+my_pattern = "^Wil"
+BegWil = df$Employee.Name[grepl((my_pattern), df$Employee.Name)]
+print(BegWil)
+```
+
+## Employees with hyphenated name
+
+```{r hyphen}
+my_pattern = "-"
+hyp = df$Employee.Name[grepl((my_pattern), df$Employee.Name)]
+print(hyp)
+```
+
+## Middle Name "Paul"
+
+```{r middle}
+my_pattern = "[A-Z][a-z]{1,} Paul [A-Z][a-z]{1,}"
+middle = df$Employee.Name[grepl((my_pattern), df$Employee.Name)]
+print(middle)
+```
+
+## Last Name Martinez
+
+```{r last}
+my_pattern = "[A-Z][a-z]{1,} [A-Z][a-z]{1,} Martinez"
+Last = df$Employee.Name[grepl((my_pattern), df$Employee.Name)]
+print(Last)
+```
+
+## Last Name Martinez, no hyphens
+
+```{r lastNoHyphen}
+#my_pattern = "[A-Z][a-z]{1,} [A-Z][a-z]{1,} Martinez$"
+my_pattern = "[A-Z][a-z]{1,} Martinez$"
+LastNH = df$Employee.Name[grepl((my_pattern), df$Employee.Name)]
+print(LastNH)
+```
+
+## First name starts with "E", has a middle initial, and last name is 'Martinez'
+
+```{r EmiddleMartinez}
+my_pattern = "E[a-z]{1,} [A-Z] Martinez"
+ExMartinez = df$Employee.Name[grepl((my_pattern), df$Employee.Name)]
+print(ExMartinez)
+```
+## First name starts with "E", has no middle initial, and last name is 'Martinez'
+
+```{r EnomiddleMartinez}
+#my_pattern = "[E][a-z]{1,} Martinez"
+my_pattern = "[E][a-z]{1,} Martinez"
+ExMartinez = df$Employee.Name[grepl((my_pattern), df$Employee.Name)]
+print(ExMartinez)
+```
