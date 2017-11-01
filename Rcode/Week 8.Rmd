@@ -1,0 +1,320 @@
+---
+title: "Week 8"
+author: "Rachael Valdez"
+date: "10/11/2017"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r importingFiles} 
+#use for HW
+#fnames = dir("../data/temperature_trials", 
+#             pattern = "*.csv, full.names=TRUE) #can use to read only csv or xlsx files
+fnames = dir("../data/temperature_trials", full.names=TRUE)
+#print(fnames)
+for (i in 1: length(fnames) ) {
+  #open each file in turn
+  temp = read.csv(fnames[i])
+  temp$DateTime = as.POSIXct(temp$DateTime, origin = '1970-1-1', tz="")
+  temp$elapsedTime = difftime(temp$DateTime, temp$DateTime[1], units='mins')
+  temp$elapsedTimeMin = as.numeric(temp$elapsedTime)
+  ######
+  #pull out file name trial number
+  loc = regexpr(pattern = "Trial[0-9]*", text = fnames[i])
+
+  trialNumber = as.numeric(substr(fnames[i], start = loc[[1]][1]+5,
+          stop = loc[[1]][1] + attr(loc, 'match.length')-1))
+  #print(trialNumber)
+  temp$trialNumber = as.numeric(trialNumber)
+  
+  if (i == 1) {
+    res = temp
+  } else {
+      res = rbind(res, temp)
+    }
+}
+
+#res$DateTime = as.POSIXct(res$DateTime, origin = '1970-1-1', tz="")#TC moved up and changed res to temp
+res$POSIXt = as.POSIXct(res$POSIXt, origin = '1970-1-1', tx="")#today class
+#as.numeric(res$POSIXt[1])#write into console
+
+```
+#Make initial plot
+#use for loop to add th eother trials as lines
+```{r plotRes}
+#use for HW
+plot(x = res$elapsedTimeMin[res$trialNumber==1], y = res$TC0[res$trialNumber==1], type = 'l',
+       #main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes',
+     las = 1,#turns y axis 
+     xlim = c(0, max(res$elapsedTimeMin)),
+     ylim = c(min(res$TC0), max(res$TC0)))
+mtext(text = "Channel TC0 for each Trial", side = 3, line = 1, cex = 1.5,
+      adj = 0)
+     #xlim = c(0, 150),
+     #ylim = c(15,35)) 
+
+trialNums = unique(res$trialNumber)  
+for(y in 2:length(trialNums)) {
+      lines(x = res$elapsedTimeMin[res$trialNumber==trialNums[y]], y = res$TC0[res$trialNumber==trialNums[y]], col = y)
+}
+
+
+```
+
+
+```{r plotRes}
+firstTrial = 1#can make this variable so only have to change in one place compared to multiple as per above
+plot(x = res$elapsedTimeMin[res$trialNumber==firstTrial], 
+     y = res$TC0[res$trialNumber==firstTrial], type = 'l',
+       #main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes',
+     las = 1,#turns y axis 
+     xlim = c(0, max(res$elapsedTimeMin)),
+     ylim = c(min(res$TC0), max(res$TC0)))
+mtext(text = "Channel TC0 for each Trial", side = 3, line = 1, cex = 1.5,
+      adj = 0)
+     #xlim = c(0, 150),
+     #ylim = c(15,35)) 
+
+trialNums = unique(res$trialNumber)  
+for(y in 2:length(trialNums)) {
+      lines(x = res$elapsedTimeMin[res$trialNumber==trialNums[y]], y = res$TC0[res$trialNumber==trialNums[y]], col = y)
+}
+
+
+```
+
+```{r matchingFiles}
+for (i in 1: length(fnames)) {
+
+loc = regexpr(pattern = "Trial[0-9]*", text = fnames[i])
+
+trialNumber = as.numeric(substr(fnames[i], start = loc[[1]][1]+5,
+          stop = loc[[1]][1] + attr(loc, 'match.length')-1))
+print(trialNumber)
+
+}
+```
+
+
+```{r importmusselinfo}
+
+library(readxl)
+info = read_xlsx("../data/Mussel_Info.xlsx")
+info$Tag.Color.. = as.character(info$Tag.Color..)
+names(info)[1] = 'TagColor'
+```
+
+```{r convertTagID}
+
+substr(info$TagColor, start = 1, stop = 1)
+
+for (i in 1:nrow(info)){
+  #Extract the 1st letter of the color, for the current row i
+  color = substr(info$TagColor[i], start = 1, stop = 1)
+  #Get the location of a 1 or 2 digit number in the current row i
+  #of info$TagColor
+  loc = regexpr(pattern = "[0-9]*$", text = info$TagColor[i])
+  #Extract the digits from info$TagColor[i]
+  digits = substr(info$TagColor[i], start = loc[[1]][1], 
+                  stop = loc[[1]] + attr(loc, 'match.length')-1)
+  #Paste the number and letter together, with no space separating them
+  tagID = paste(digits, color, sep="")
+  #Print just to check that it works
+  print(tagID)
+  #Write the new tagID into its own column in info, using the current
+  #row to make sure it matches up with whatever row i we are on.
+  info$TagID[i] = tagID
+}
+```
+
+
+```{r importHTinfo}
+#Extract xlsx for plot 2 
+
+library(readxl)
+heatingInfo = read_xlsx("../data/Heating_trial_info.xlsx")
+#heatingInfo$TrialNumber = as.character(heatingInfo$TrialNumber)
+#names(heatingInfo)[1] = 'TrialNumber
+
+#heatingInfo[1,'TCchannel'] 
+#heatingInfo[1,'TCLocation'] 
+heatingInfo$TrialNumber = as.character(heatingInfo$TCchannel)
+```
+
+```{r ContinuedAbove}
+#continued for plot 2
+#res$TC0 #way to extract column name
+#res[ ,3] gives same as below
+#need to create plot function and then add lines similar to before for plot 2
+for (x in 1: nrow(heatingInfo)) {
+  if (heatingInfo$TCLocation[x] == "In50") {
+    chloc = regexpr(pattern = "[[:digit:]]", 
+                    heatingInfo$TCchannel[2])
+    chNum = substr(heatingInfo$TCchannel[1],
+               start = chloc[[1]][1],
+               stop = chloc[[1]][1])
+    chName = paste("TC", chNum, sep = "" )
+    trialNumber = heatingInfo$TrialNumber[x]
+    
+    #temps = res[ res$trialNumber == trialNumber,chName]
+    #times = res[ res$elapsedTimeMin[res$trialNumber == trialNumber]]
+    #print(x)
+    #Logic in here to make a plot firs time and everytime after use lines() function
+    temps = res[ res$trialNumber == max(which(heatingInfo$TrialNumber == 12)),chName]
+    times = res[ res$elapsedTimeMin(max(which(heatingInfo$TrialNumber == 12) )])
+    max(which(heatingInfo$TrialNumber == 12))
+    #figure out above formula, should be right, something is wrong
+    
+  }
+}
+
+```
+
+
+```{r plot2, echo=FALSE}
+
+plot(x = Bind$POSIXt, y = Bind$In50, type = 'l',
+       main = "Location In50 for each Trial Number",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes',
+     ylim = c(15,35)) 
+
+```
+
+
+############################## HW week 8 stuff
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+## Improting Files
+12 .csv files will be imported and bound together to create one large file. 
+```{r importingFiles} 
+#use for HW
+#fnames = dir("../data/temperature_trials", 
+#             pattern = "*.csv, full.names=TRUE) #can use to read only csv or xlsx files
+fnames = dir("../data/temperature_trials", full.names=TRUE)
+#print(fnames)
+for (i in 1: length(fnames) ) {
+  #open each file in turn
+  temp = read.csv(fnames[i])
+  temp$DateTime = as.POSIXct(temp$DateTime, origin = '1970-1-1', tz="")
+  temp$elapsedTime = difftime(temp$DateTime, temp$DateTime[1], units='mins')
+  temp$elapsedTimeMin = as.numeric(temp$elapsedTime)
+  ######
+  #pull out file name trial number
+  loc = regexpr(pattern = "Trial[0-9]*", text = fnames[i])
+
+  trialNumber = as.numeric(substr(fnames[i], start = loc[[1]][1]+5,
+          stop = loc[[1]][1] + attr(loc, 'match.length')-1))
+  #print(trialNumber)
+  temp$trialNumber = as.numeric(trialNumber)
+  
+  if (i == 1) {
+    res = temp
+  } else {
+      res = rbind(res, temp)
+    }
+}
+
+
+res$POSIXt = as.POSIXct(res$POSIXt, origin = '1970-1-1', tx="")#today class
+#as.numeric(res$POSIXt[1])#write into console
+
+```
+
+#Make initial plot
+#use for loop to add th eother trials as lines
+```{r plotRes}
+
+plot(x = res$elapsedTimeMin[res$trialNumber==1], y = res$TC0[res$trialNumber==1], type = 'l',
+       #main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes',
+     las = 1,#turns y axis 
+     xlim = c(0, max(res$elapsedTimeMin)),
+     ylim = c(min(res$TC0), max(res$TC0)))
+mtext(text = "Channel TC0 for each Trial", side = 3, line = 1, cex = 1.5,
+      adj = 0)
+     #xlim = c(0, 150),
+     #ylim = c(15,35)) 
+
+trialNums = unique(res$trialNumber)  
+for(y in 2:length(trialNums)) {
+      lines(x = res$elapsedTimeMin[res$trialNumber==trialNums[y]], y = res$TC0[res$trialNumber==trialNums[y]], col = y)
+}
+
+
+```
+
+```{r importHTinfo}
+#Extract xlsx for plot 2 
+
+library(readxl)
+heatingInfo = read_xlsx("../data/Heating_trial_info.xlsx")
+#heatingInfo$TrialNumber = as.character(heatingInfo$TrialNumber)
+#names(heatingInfo)[1] = 'TrialNumber
+
+#heatingInfo[1,'TCchannel'] 
+#heatingInfo[1,'TCLocation'] 
+heatingInfo$TrialNumber = as.character(heatingInfo$TCchannel)
+```
+
+```{r ContinuedAbove}
+#continued for plot 2
+#need to create plot function and then add lines similar to before for plot 2
+for (x in 1: nrow(heatingInfo)) {
+  if (heatingInfo$TCLocation[x] == "In50") {
+    chloc = regexpr(pattern = "[[:digit:]]", 
+                    heatingInfo$TCchannel[2])
+    chNum = substr(heatingInfo$TCchannel[1],
+               start = chloc[[1]][1],
+               stop = chloc[[1]][1])
+    chName = paste("TC", chNum, sep = "" )
+    ##trialNumber = heatingInfo$TrialNumber[x]
+    
+    #temps = res[ res$trialNumber == trialNumber,chName]
+    #times = res[ res$elapsedTimeMin[res$trialNumber == trialNumber]]
+    #print(x)
+    #Logic in here to make a plot firs time and everytime after use lines() function
+   
+    #max = max(which(heatingInfo$TrialNumber == 12))
+    temps = res[ res$trialNumber == max(which(heatingInfo$TrialNumber == 12)),chName]
+    times = res[ res$elapsedTimeMin == max(which(heatingInfo$TrialNumber == 12)) ]
+    #max(which(heatingInfo$TrialNumber == 12))
+    #figure out above formula, should be right, something is wrong
+    
+  }
+}
+
+```
+
+
+```{r plot2}
+
+plot(x = heatingInfo$elapsedTimeMin[heatingInfo$trialNumber==1], y = 
+       heatingInfo$TC0[heatingInfo$trialNumber==1], type = 'l',
+       #main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes',
+     las = 1,#turns y axis 
+     xlim = c(0, max(heatingInfo$elapsedTimeMin)),
+     ylim = c(min(heatingInfo$TC0), max(heatingInfo$TC0)))
+mtext(text = "Channel TC0 for each Trial", side = 3, line = 1, cex = 1.5,
+      adj = 0)
+     #xlim = c(0, 150),
+     #ylim = c(15,35)) 
+
+trialNums = unique(heatingInfo$trialNumber)  
+for(x in 2:length(trialNums)) {
+      lines(x = heatingInfo$elapsedTimeMin[heatingInfo$trialNumber==trialNums[y]], y = heatingInfo$TC0[heatingInfo$trialNumber==trialNums[y]], col = y)
+}
+
+
+```

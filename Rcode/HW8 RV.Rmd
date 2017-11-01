@@ -1,0 +1,188 @@
+---
+title: "HW8 RV"
+author: "Rachael Valdez"
+date: "10/24/2017"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+## Importing Files
+12 .csv files will be imported and bound together to create one large file using a loop.
+These files contain information regaurding the time and temperature per trial number conducted. 
+```{r importingFiles} 
+fnames = dir("../data/temperature_trials", full.names=TRUE)
+
+for (i in 1: length(fnames) ) {
+  #open each file in turn
+  temp = read.csv(fnames[i])
+  temp$DateTime = as.POSIXct(temp$DateTime, origin = '1970-1-1', tz="")
+  temp$elapsedTime = difftime(temp$DateTime, temp$DateTime[1], units='mins')
+  temp$elapsedTimeMin = as.numeric(temp$elapsedTime)
+  
+  #pull out file name trial number
+  loc = regexpr(pattern = "Trial[0-9]*", text = fnames[i])
+
+  trialNumber = as.numeric(substr(fnames[i], start = loc[[1]][1]+5,
+          stop = loc[[1]][1] + attr(loc, 'match.length')-1))
+  #print(trialNumber)
+  temp$trialNumber = as.numeric(trialNumber)
+  
+  if (i == 1) {
+    res = temp
+  } else {
+      res = rbind(res, temp)
+    }
+}
+
+
+res$POSIXt = as.POSIXct(res$POSIXt, origin = '1970-1-1', tx="")
+
+```
+
+#Plot 1
+Data frame will be plotted to get the temperature for each TC0 time point.
+```{r plotRes}
+
+plot(x = res$elapsedTimeMin[res$trialNumber==1], y = res$TC0[res$trialNumber==1], type = 'l',
+       #main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes',
+     las = 1,#turns y axis 
+     xlim = c(0, max(res$elapsedTimeMin)),
+     ylim = c(min(res$TC0), max(res$TC0)))
+mtext(text = "Channel TC0 for each Trial", side = 3, line = 1, cex = 1.5,
+      adj = 0)
+     #xlim = c(0, 150),
+     #ylim = c(15,35)) 
+
+trialNums = unique(res$trialNumber)  
+for(y in 2:length(trialNums)) {
+      lines(x = res$elapsedTimeMin[res$trialNumber==trialNums[y]], y = res$TC0[res$trialNumber==trialNums[y]], col = y)
+}
+
+
+```
+
+## Importing excel 
+Heating trial info will be imported which contains mussel tag ID's,the channel, trial number information, and if the specimin is dead or alive. 
+```{r importHTinfo}
+#Extract xlsx for plot 2 
+
+library(readxl)
+heatingInfo = read_xlsx("../data/Heating_trial_info.xlsx")
+heatingInfo$TrialNumber = as.character(heatingInfo$TCchannel)
+```
+
+##Plot 2
+Plot two will parce out TCLocation for In50 for each trial 1-12.
+
+```{r pl, echo=FALSE}
+
+trial1 = read.csv(fnames[1])
+TrialNumber = 1
+T1 = cbind(TrialNumber, trial1)  #add column
+T1$POSIXt = ((T1$POSIXt-1500032605)/60)
+
+trial2 = read.csv(fnames[2])
+TrialNumber = 2
+T2 = cbind(TrialNumber, trial2)  #add column
+T2$POSIXt = ((T2$POSIXt-1500036845)/60)
+
+trial3 = read.csv(fnames[3])
+TrialNumber = 3
+T3 = cbind(TrialNumber, trial3)  #add column
+T3$POSIXt = ((T3$POSIXt-1500041435)/60)
+
+trial4 = read.csv(fnames[4])
+TrialNumber = 4
+T4 = cbind(TrialNumber, trial4)  #add column
+T4$POSIXt = ((T4$POSIXt-1500571915)/60)
+
+trial5 = read.csv(fnames[5])
+TrialNumber = 5
+T5 = cbind(TrialNumber, trial5)  #add column
+T5$POSIXt = ((T5$POSIXt-1500628845)/60)
+
+trial6 = read.csv(fnames[6])
+TrialNumber = 6
+T6 = cbind(TrialNumber, trial6)  #add column
+T6$POSIXt = ((T6$POSIXt-1500641795)/60)
+
+trial7 = read.csv(fnames[7])
+TrialNumber = 7
+T7 = cbind(TrialNumber, trial7)  #add column
+T7$POSIXt = ((T7$POSIXt-1500649485)/60)
+
+trial8 = read.csv(fnames[8])
+TrialNumber = 8
+T8 = cbind(TrialNumber, trial8)  #add column
+T8$POSIXt = ((T8$POSIXt-1500805875)/60)
+
+trial9 = read.csv(fnames[9])
+TrialNumber = 9
+T9 = cbind(TrialNumber, trial9)  #add column
+T9$POSIXt = ((T9$POSIXt-1500885615)/60)
+
+trial10 = read.csv(fnames[10])
+TrialNumber = 10
+T10 = cbind(TrialNumber, trial10)  #add column
+T10$POSIXt = ((T10$POSIXt-1501580645)/60)
+
+trial11 = read.csv(fnames[11])
+TrialNumber = 11
+T11 = cbind(TrialNumber, trial11)  #add column
+T11$POSIXt = ((T11$POSIXt-1501580645)/60)
+
+trial12 = read.csv(fnames[12])
+TrialNumber = 12
+T12 = cbind(TrialNumber, trial12)  #add column
+T12$POSIXt = ((T12$POSIXt-1501603975)/60)
+
+res = rbind(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)
+
+res$DateTime = as.POSIXct(res$DateTime, origin = '1970-1-1', tz="")
+
+
+One = T1[,c(1:2,4)]
+  colnames(One)[colnames(One) == 'TC0'] <- 'In50'
+Two = T2[,c(1:2,7)]
+  colnames(Two)[colnames(Two) == 'TC3'] <- 'In50'
+Three = T3[,c(1:2,7)]
+  colnames(Three)[colnames(Three) == 'TC3'] <- 'In50'
+Four = T4[,c(1:2,7)]
+  colnames(Four)[colnames(Four) == 'TC3'] <- 'In50'  
+Five = T5[,c(1:2,4)]
+  colnames(Five)[colnames(Five) == 'TC0'] <- 'In50'  
+Six = T6[,c(1:2,4)]
+  colnames(Six)[colnames(Six) == 'TC0'] <- 'In50'  
+Seven = T7[,c(1:2,6)]
+  colnames(Seven)[colnames(Seven) == 'TC2'] <- 'In50'  
+Eight = T8[,c(1:2,8)]
+  colnames(Eight)[colnames(Eight) == 'TC4'] <- 'In50'  
+Nine = T9[,c(1:2,8)]
+  colnames(Nine)[colnames(Nine) == 'TC4'] <- 'In50' 
+Ten = T10[,c(1:2,7)]
+  colnames(Ten)[colnames(Ten) == 'TC3'] <- 'In50' 
+Eleven = T11[,c(1:2,8)]
+  colnames(Eleven)[colnames(Eleven) == 'TC4'] <- 'In50'  
+Twelve = T12[,c(1:2,7)]
+  colnames(Twelve)[colnames(Twelve) == 'TC3'] <- 'In50'
+  
+  Bind = rbind(One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Eleven, Twelve)
+
+
+```
+
+```{r plot1, echo=FALSE}
+
+plot(x = Bind$POSIXt, y = Bind$In50, type = 'l',
+       main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes',
+     ylim = c(15,35)) 
+
+```
+
+

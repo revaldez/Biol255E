@@ -1,0 +1,36 @@
+---
+title: "Week 10"
+author: "Rachael Valdez"
+date: "10/25/2017"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+##Portfolio
+```{r dataImport}
+fname = ("../data/Portfoliofiles/2017-1010Plate 1 TM032.txt")
+df = read.table(file = fname, header = FALSE, sep = "\t", skip = 4, fileEncoding = "", check.names = FALSE, nrows = 50)
+
+colNames = c('Time', 'TemperatureC')
+colLetters = LETTERS[1:8]
+for(i in 1:length(colLetters)) {
+  for(j in 1:12) {
+    temp = paste(colLetters[i], j, sep = "")
+    colNames = c(colNames, temp)
+    }
+}
+colnames(df) = colNames
+apply(df, 2, function(df) maxx, na.rm = TRUE)
+
+Max = apply(df,2,max)
+df1 = rbind(df, Max) #add max of each column to last row
+myData = df1[-c(1:50), -c(1,2) ] #gathered headers and max values
+
+#install.packages('reshape2')
+library(reshape2)
+mydt = dcast(myData,X~Y,value.var = "Z")
+```
+
+

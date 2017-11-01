@@ -1,0 +1,218 @@
+---
+title: "Workspace"
+author: "Rachael Valdez"
+date: "10/16/2017"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r importingFiles}
+
+fnames = dir("../data/temperature_trials", full.names=TRUE)
+#print(fnames)
+for (i in 1: length(fnames) ) {
+  #open each file in turn
+  temp = read.csv(fnames[i])
+  
+  if (i == 1) {
+    res = temp
+  } else {
+      res = rbind(res, temp)
+    }
+}
+
+res$DateTime = as.POSIXct(res$DateTime, origin = '1970-1-1', tz="")
+#DT = unclass(res$DateTime)
+
+#res$Time <- format(as.POSIXct(res$DateTime) ,format = "%H:%M:%S") 
+#res$Time = as.POSIXct(res$Time, origin = '1970-1-1', tz="") 
+#res1 = cbind(DT, res) 
+
+ElapsedTime = (res$POSIXt-1500032605)/60
+
+#res1 = cbind(ElapsedTime, res)  #add column
+```
+
+```{r Use}
+   for (i in 1: length(fnames)) {
+
+loc = regexpr(pattern = "Trial[0-9]*", text = fnames[i])
+
+trialNumber = as.numeric(substr(fnames[i], start = loc[[1]][1]+5,
+          stop = loc[[1]][1] + attr(loc, 'match.length')-1))
+print(trialNumber)
+
+res1 = cbind(trialNumber, res)
+```
+
+
+```{r convertTagID}
+
+res[res$TrialNumber ==2, 'TC0']
+
+substr(res2$trialNumber, start = 1, stop = 1)
+
+for (i in 1:nrow (trialNumber)){
+  #Extract the 1st letter of the color, for the current row i
+  color = substr(res2$trialNumber[i], start = 1, stop = 1)
+  #Get the location of a 1 or 2 digit number in the current row i
+  #of info$TagColor
+  loc = regexpr(pattern = "[0-9]*$", text = res2$trialNumber[i])
+  #Extract the digits from info$TagColor[i]
+  digits = substr(res2$trialNumber[i], start = loc[[1]][1], 
+                  stop = loc[[1]] + attr(loc, 'match.length')-1)
+  #Paste the number and letter together, with no space separating them
+  TrialNumber = paste(digits, color, sep="")
+  #Print just to check that it works
+  print(TrialNumber)
+  #Write the new tagID into its own column in info, using the current
+  #row to make sure it matches up with whatever row i we are on.
+  res2$trialNumber[i] = TrialNumber
+}
+```
+
+```{r files}
+for (i in 1: length(fnames) ) {
+  #open each file in turn
+  temp = read.csv(fnames[i])
+  temp$TrialNumber
+  Trial = "Trial[0-9]"
+  ex = fnames[grepl((Trial), fnames)]
+  exa = ex$Trial
+    print(info)
+    
+
+  
+  my_pattern = "[E][a-z]{1,} Martinez"
+ExMartinez = df$Employee.Name[grepl((my_pattern), df$Employee.Name)]
+print(ExMartinez)
+
+
+res1 = cbind(TrialNumber = read.csv(fnames[i]), res)  #add column
+
+}
+```
+
+
+```{r matchingFiles}
+for (i in 1: length(fnames)) {
+
+loc = regexpr(pattern = "Trial[0-9]*", text = fnames[i])
+
+trialNumber = as.numeric(substr(fnames[i], start = loc[[1]][1]+5,
+          stop = loc[[1]][1] + attr(loc, 'match.length')-1))
+#print(trialNumber)
+
+}
+```
+
+```{r ???}
+res[1,'TC0'] #can get specific row and column to get specific data pt
+
+for (i in 1: length(fnames) ) {
+  #open each file in turn
+  temp = read.csv(fnames[i])
+  temp$TrialNumber = #???????? need to add 
+  
+  if (i == 1) {
+    res = temp
+  } else {
+      res = rbind(res, temp)
+    }
+
+
+
+res[res$TrialNumber ==2, 'TC0'] #use to create a loop to look through all trial numbers?
+
+```
+
+
+
+```{r plot1, echo=FALSE}
+Plot1 <- function(res1) {
+plot(x = res1$ElapsedTime, y = res1$TC0, type = 'l',
+       main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes') 
+  Plot1(res1)
+}
+```
+
+```{r plot1, echo=FALSE}
+Plot1 <- function(res1) {
+
+lines(x = res1$ElapsedTime, y = res1$TC0, type = 'l',
+       main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes') 
+
+#Plot1(res1)
+#print(res1)
+}
+```
+
+```{r plot2, echo=FALSE}
+Plot1 <- function(res2) {
+plot(x = res2$ElapsedTime, y = res2$TC0, type = 'l',
+       main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes') 
+  Plot1(res1)
+}
+```
+
+```{r plot2, echo=FALSE}
+fnames <- list.files("../data/temperature_trials", 
+                     pattern = "*.csv", full.names = TRUE)
+temp   <- lapply(fnames, read.csv)
+names(temp) <- tools::file_path_sans_ext(basename(fnames))
+
+dplyr::bind_rows(1:12)
+```
+
+```{r importingFiles} 
+#fnames = dir("../data/temperature_trials", 
+#             pattern = "*.csv, full.names=TRUE) #can use to read only csv or xlsx files
+fnames = dir("../data/temperature_trials", full.names=TRUE)
+#print(fnames)
+for (i in 1: length(fnames) ) {
+  #open each file in turn
+  temp = read.csv(fnames[i])
+  temp$DateTime = as.POSIXct(temp$DateTime, origin = '1970-1-1', tz="")
+  temp$elapsedTime = difftime(temp$DateTime, temp$DateTime[1], units='mins')
+  temp$elapsedTimeMin = as.numeric(temp$elapsedTime)
+  ######
+  #pull out file name trial number
+  loc = regexpr(pattern = "Trial[0-9]*", text = fnames[i])
+
+  trialNumber = as.numeric(substr(fnames[i], start = loc[[1]][1]+5,
+          stop = loc[[1]][1] + attr(loc, 'match.length')-1))
+  #print(trialNumber)
+  temp$trialNumber = as.numeric(trialNumber)
+  
+  if (i == 1) {
+    res = temp
+  } else {
+      res = rbind(res, temp)
+    }
+}
+
+#res$DateTime = as.POSIXct(res$DateTime, origin = '1970-1-1', tz="")#TC moved up and changed res to temp
+res$POSIXt = as.POSIXct(res$POSIXt, origin = '1970-1-1', tx="")#today class
+#as.numeric(res$POSIXt[1])#write into console
+
+```
+
+```{r plot1, echo=FALSE}
+
+plot(x = res$elapsedTimeMin, y = res$TC0, type = 'l',
+       main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes',
+     ylim = c(15,35)) 
+
+```

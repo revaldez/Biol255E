@@ -1,0 +1,223 @@
+---
+title: "HW Week 8"
+author: "Rachael Valdez"
+date: "10/15/2017"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r DataImport}
+fnames = dir("../data/temperature_trials", full.names=TRUE)
+
+trial1 = read.csv(fnames[1])
+TrialNumber = 1
+T1 = cbind(TrialNumber, trial1)  #add column
+T1$POSIXt = ((T1$POSIXt-1500032605)/60)
+
+trial2 = read.csv(fnames[2])
+TrialNumber = 2
+T2 = cbind(TrialNumber, trial2)  #add column
+T2$POSIXt = ((T2$POSIXt-1500036845)/60)
+
+trial3 = read.csv(fnames[3])
+TrialNumber = 3
+T3 = cbind(TrialNumber, trial3)  #add column
+T3$POSIXt = ((T3$POSIXt-1500041435)/60)
+
+trial4 = read.csv(fnames[4])
+TrialNumber = 4
+T4 = cbind(TrialNumber, trial4)  #add column
+T4$POSIXt = ((T4$POSIXt-1500571915)/60)
+
+trial5 = read.csv(fnames[5])
+TrialNumber = 5
+T5 = cbind(TrialNumber, trial5)  #add column
+T5$POSIXt = ((T5$POSIXt-1500628845)/60)
+
+trial6 = read.csv(fnames[6])
+TrialNumber = 6
+T6 = cbind(TrialNumber, trial6)  #add column
+T6$POSIXt = ((T6$POSIXt-1500641795)/60)
+
+trial7 = read.csv(fnames[7])
+TrialNumber = 7
+T7 = cbind(TrialNumber, trial7)  #add column
+T7$POSIXt = ((T7$POSIXt-1500649485)/60)
+
+trial8 = read.csv(fnames[8])
+TrialNumber = 8
+T8 = cbind(TrialNumber, trial8)  #add column
+T8$POSIXt = ((T8$POSIXt-1500805875)/60)
+
+trial9 = read.csv(fnames[9])
+TrialNumber = 9
+T9 = cbind(TrialNumber, trial9)  #add column
+T9$POSIXt = ((T9$POSIXt-1500885615)/60)
+
+trial10 = read.csv(fnames[10])
+TrialNumber = 10
+T10 = cbind(TrialNumber, trial10)  #add column
+T10$POSIXt = ((T10$POSIXt-1501580645)/60)
+
+trial11 = read.csv(fnames[11])
+TrialNumber = 11
+T11 = cbind(TrialNumber, trial11)  #add column
+T11$POSIXt = ((T11$POSIXt-1501580645)/60)
+
+trial12 = read.csv(fnames[12])
+TrialNumber = 12
+T12 = cbind(TrialNumber, trial12)  #add column
+T12$POSIXt = ((T12$POSIXt-1501603975)/60)
+
+res = rbind(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)
+
+res$DateTime = as.POSIXct(res$DateTime, origin = '1970-1-1', tz="")
+
+#res$POSIXt <- as.numeric(res$POSIXt)
+#res$TC0 <- as.numeric(res$TC0)
+
+```
+
+```{r plot1, echo=FALSE}
+
+plot(x = res$POSIXt, y = res$TC0, type = 'l',
+       main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes',
+     ylim = c(15,35)) 
+
+```
+
+```{r importHTinfo}
+
+library(readxl)
+Heating_trial_info = read_xlsx("../data/Heating_trial_info.xlsx")
+Heating_trial_info$TrialNumber = as.character(Heating_trial_info$TrialNumber)
+#names(Heating_trial_info)[1] = 'TrialNumber
+
+Heating_trial_info[1,'TCchannel'] 
+Heating_trial_info[1,'TCLocation'] 
+
+
+   for (i in 1: length(Heating_trial_info)) {
+
+loc = regexpr(pattern = "In50*", text = Heating_trial_info[i])
+#res$trialNumber <- trialNumber
+trialNumber = as.numeric(substr(Heating_trial_info[i], start = loc[[1]][1]+5,
+            stop = loc[[1]][1] + attr(loc, 'match.length')-1))
+print(trialNumber)
+}
+```
+
+```{r pl, echo=FALSE}
+
+One = T1[,c(1:2,4)]
+  colnames(One)[colnames(One) == 'TC0'] <- 'In50'
+Two = T2[,c(1:2,7)]
+  colnames(Two)[colnames(Two) == 'TC3'] <- 'In50'
+Three = T3[,c(1:2,7)]
+  colnames(Three)[colnames(Three) == 'TC3'] <- 'In50'
+Four = T4[,c(1:2,7)]
+  colnames(Four)[colnames(Four) == 'TC3'] <- 'In50'  
+Five = T5[,c(1:2,4)]
+  colnames(Five)[colnames(Five) == 'TC0'] <- 'In50'  
+Six = T6[,c(1:2,4)]
+  colnames(Six)[colnames(Six) == 'TC0'] <- 'In50'  
+Seven = T7[,c(1:2,6)]
+  colnames(Seven)[colnames(Seven) == 'TC2'] <- 'In50'  
+Eight = T8[,c(1:2,8)]
+  colnames(Eight)[colnames(Eight) == 'TC4'] <- 'In50'  
+Nine = T9[,c(1:2,8)]
+  colnames(Nine)[colnames(Nine) == 'TC4'] <- 'In50' 
+Ten = T10[,c(1:2,7)]
+  colnames(Ten)[colnames(Ten) == 'TC3'] <- 'In50' 
+Eleven = T11[,c(1:2,8)]
+  colnames(Eleven)[colnames(Eleven) == 'TC4'] <- 'In50'  
+Twelve = T12[,c(1:2,7)]
+  colnames(Twelve)[colnames(Twelve) == 'TC3'] <- 'In50'
+  
+  Bind = rbind(One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Eleven, Twelve)
+
+
+```
+
+```{r plot1, echo=FALSE}
+
+plot(x = Bind$POSIXt, y = Bind$In50, type = 'l',
+       main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes',
+     ylim = c(15,35)) 
+
+```
+
+
+```{r plotRes}
+
+plot(x = Bind$POSIXt[Bind$TrialNumber == 1], y = Bind$In50[Bind$TrialNumber == 1], type = 'l',
+       #main = "Channel TC0 for each Trial",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes',
+     las = 1,#turns y axis 
+     #xlim = c(0, max(Bind$POSIXt)),
+     #ylim = c(min(Bind$In50), max(Bind$In50)))
+#mtext(text = "Channel TC0 for each Trial", side = 3, line = 1, cex = 1.5,
+    #  adj = 0)
+     xlim = c(0, 150),
+     ylim = c(15,35)) 
+
+#TNums = unique(Bind$TrialNumber) 
+#for(y in 2:length(TNums)) {
+ #     lines(x = Bind$POSIXt[Bind$In50 == TNums[y]], 
+  #          y = Bind$In50[Bind$TrialNumber == TNums[y]], col = y)
+#}
+TNums = unique(Bind$TrialNumber)  
+for(y in 2:length(trialNums)) {
+      lines(x = Bind$POSIXt[Bind$In50 == TNums[y]], 
+            y = Bind$In50[Bind$TrialNumber == TNums[y]], col = y)
+}
+
+```
+
+```{r plot2, echo=FALSE}
+
+plot(x = Bind$POSIXt[], y = Bind$In50, type = 'l',
+       main = "Location In50 for each Trial Number",
+       ylab = 'Temperature, C',
+       xlab = 'Elapsed Time, minutes',
+     ylim = c(15,35)) 
+
+TNums = unique(Bind$TrialNumber)  
+for(y in 1:length(TNums)) {
+      lines(x = Bind$POSIXt[Bind$In50==TNums[y]], 
+            y = Bind$In50[Bind$TrialNumber==TNums[y]], col = y)
+}
+```
+
+```{r ContinuedAbove}
+#continued for plot 2
+for (x in 1: nrow(heatingInfo)) {
+  if (heatingInfo$TCLocation[x] == "In50") {
+    chloc = regexpr(pattern = "[[:digit:]]", 
+                    heatingInfo$TCchannel[2])
+    chNum = substr(heatingInfo$TCchannel[1],
+               start = chloc[[1]][1],
+               stop = chloc[[1]][1])
+    chName = paste("TC", chNum, sep = "" )
+   
+    temps = res[ res$trialNumber == max(which(heatingInfo$TrialNumber == 12)),chName]
+    #times = res[ res$elapsedTimeMin == max(which(heatingInfo$TrialNumber == 12)) ]
+    #max(which(heatingInfo$TrialNumber == 12))
+    
+    
+  }
+}
+
+```
+
+
+
