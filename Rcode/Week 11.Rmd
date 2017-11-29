@@ -1,0 +1,129 @@
+---
+title: "Week 11"
+author: "Rachael Valdez"
+date: "11/1/2017"
+output: 
+   word_document:
+      fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Including plots
+
+```{r pressure}
+plot(pressure)
+```
+## Increasing size of image
+adding a 'dpi = xxx' argument inside chunk header will make lareger png file.
+
+```{r pressure2, dpi= = 300}
+plot(pressure, col = 'blue')
+```
+
+```{r pressure3, dpi= = 300, fig.width=4, fig.height=7}
+plot(pressure)
+```
+
+```{r pressure4, dpi= = 300, fig.width=7, fig.height=5, dev = c('png', 'pdf')}
+plot(pressure, col = 'red')
+```
+
+```{r pressure4, dpi= = 300, fig.width=7, fig.height=5, fig.cap="This is the pressure data figure"}
+plot(pressure, col = 'red')
+```
+
+```{r basic setup}
+#install.packages("ggplot2")
+library(ggplot2)
+diamonds = diamonds #make diamonds a data frame visible in the workspace
+```
+
+```{r layingoutbasicplot, fig.show='hide', echo=TRUE}
+ggplot(diamonds)#if only the dataset is known
+ggplot(diamonds, aes(x=caret))#y axis can be speciifed in respective geoms
+ggplot(diamonds, aes(x=care, y =pricet))
+```
+
+
+```{r caratvscost, echo=TRUE, dpi = 400fig.show='hide', echo=TRUE}
+ggplot(diamonds)#if only the dataset is known
+ggplot(diamonds, aes(x=carat))#y axis can be speciifed in respective geoms
+ggplot(diamonds, aes(x=care, y =price)) #divid by cut
+  geopm_point
+```
+
+```{r divid, echo=TRUE}
+ggplot(diamonds, aes(x=carat, y = price, color=cut)) + geom_point() + geom_smooth()
+#adding scatter plot x and y 
+```
+
+
+```{r smoother, echo=TRUE}
+ggplot(diamonds, aes(x=carat, y = price, color=cut)) + geom_point(aes(color=cut)) + geom_smooth()
+
+```
+
+```{r shapevarybycolor, echo=TRUE dpi=300}
+ggplot(diamonds, aes(x=carat, y = price, color=cut)) + geom_point(aes(color=cut)) + geom_smooth()
+
+```
+
+```{r singlesmoothertransparancy, echo=TRUEm dpi=300}
+ggplot(diamonds, aes(x=carat, y = price)) + geom_point(aes(color=cut)) + alpha=0.3
+geom_smooth()
+
+```
+
+```{r addTitles, echo=TRUE dpi=300}
+gg <- ggplot(diamonds, aes(x=carat, y = price)), color=cut + geom_point(aes(color=cut)) + alpha=0.3
+geom_smooth()
+#now modify labels
+gg = gg + labs(title="Scatterplot")
+```
+
+```{r themeMod2, echo=TRUE dpi=300}
+gg1 = gg + theme(plot.title = element_text(size = 30, face = "bold"),
+                 axis.title.x = element_text(size=18),
+                 axis.title.y = element_text(size=18),
+                 axis.title.x = element_text(size=25),
+                 axis.title.y = element_text(size=25))
+```
+
+```{r facet1, echo=TRUE dpi=300}
+gg + facet_wrap( ~ cut, ncol = 3) #this will separate the plots for you, can make several box plots, so I can use this for each strain
+
+```
+
+```{r barchart1, echo=TRUE dpi=300}
+mtcars = mtcars
+ggplot(mtcars, aes(x+cyl)) +geom_bar() + labs(title='Frequency bar chart')
+
+```
+
+```{r mpg3, echo=TRUE dpi=300}
+#boxplot
+ggplot(mtcars, aes(x = factor(cyl), y = hp)) + stat_boxplot()
+#ggplot(mtcars, aes(x+cyl)) +geom_bar() + labs(title='Frequency bar chart')
+
+```
+
+```{r mpg3, echo=TRUE dpi=300}
+#violin plot
+ggplot(mtcars, aes(x = factor(cyl), y = hp)) + stat_boxplot()
+ggplot(mtcars, aes(x+cyl)) +geom_bar() + labs(title='Frequency bar chart')
+```
+
+```{r mpg3, echo=TRUE dpi=300}
+#dot plot(raw data), jittered so points don't overlap
+ggplot(mtcars, aes(x = factor(cyl), y = hp)) + geom_jitter(width = 0.1, height = 0, 
+                                                           aes(color=factor(cyl)))
+
+```
+
+
+
+
+
