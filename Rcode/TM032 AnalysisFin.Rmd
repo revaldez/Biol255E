@@ -1,7 +1,7 @@
 ---
 title: "TM032"
 author: "Rachael Valdez"
-date: "November 9, 2017"
+date: "November 10, 2017"
 output: word_document
 ---
 
@@ -13,18 +13,36 @@ knitr::opts_chunk$set(echo = TRUE)
 if (Sys.getenv("JAVA_HOME")!="")
   Sys.setenv(JAVA_HOME="")
 ```
-##Test Method
-This test method analysis will be used to determine if fast protein liquid chromatography(FPLC) and tangential flow filtration(TFF) meet the set specifications for each run to be built into production.Several samples throughout the downstream processing will be tested to make sure the protein is still functional and loss during processing is minimized. The protein is tested for activity at 8% against 4 positive and 1 negative bacterial strains to make sure the protein is targeting set organisms. Using a Spectramax-L, luminescence is measured over 12.5 seconds. The data generated is from a Spectramax-L which outputs a .txt file which will be imported.  
+###Test Method
+This test method analysis will be used to determine if fast protein liquid chromatography(FPLC) and tangential flow filtration(TFF) meet the set specifications for each run to be built into production.Several samples throughout the downstream processing will be tested to make sure the protein is still functional and loss during processing is minimized. The protein is tested for activity at 8% against 4 positive and 1 negative bacterial strains to make sure the protein is targeting set organisms. Using a Spectramax-L, luminescence is measured over 12.5 seconds. The data generated is from a Spectramax-L which outputs a .txt file which will be imported. 
 
-##Data Import
+###Data Analysis
+1: Import data and libraries
+
+2: Calculated averages
+
+3: Calculated standard deviation
+
+4: Calculated CV
+
+5: Generate strain analysis chart with pass or fail
+
+6: Generate dot plot
+
+7: Generate bar graph
+
+8: Data export
+
+  Note: Before running script go to section 8 and input a unique name identifier so files do not save over each other.
+
+
+### 1: Data Import
 Data file, .txt, will be imported. The columns will be named and the peak of each well will be calculated. 
 
 ```{r Data}
 ##Set your directory to folder with your data
-#"C:/Users/valdezr2/Desktop/RFiles/Data" #set WD
-spec <- file.choose()
 
-#spec = ("../Data/Plate1.txt") #set to find .txt file on computer
+spec <- file.choose()
 data = read.table(spec, header=FALSE, sep='\t', skip = 3,nrows = 50)
 colNames = c('Time', 'TemperatureC')
 colLetters = LETTERS[1:8]
@@ -45,17 +63,19 @@ colnames(MaxValues)[1] <- "Max_RLU" #name column
 PeakValues = data.frame(na.omit(MaxValues)) #remove values with NA
 
 
-
+###Libraries
 library(xlsx)
 library(rJava)
 library(xlsxjars)
-write.xlsx(PeakValues, "../data/PeakValues.xlsx") #Export max values of plate
-
+library(ggplot2)
+library(reshape2)
 
 ```
+
 ###Strain Analysis
-Each bacterial strain tested will have the average, standard deviation and CV calculated. 
-###Peak Value
+Each bacterial strain tested will have the average, standard deviation and CV calculated. Based off of these calulations a chart will be output with the set specifications and a pass or fail output.
+
+### 2: Peak Value
 ```{r Mean}
 ###AVC Means
 Strain1 <- rowMeans(myData[,1:2])
@@ -148,10 +168,10 @@ W2Mean = t(W2Mean)
 Mean = rbind(AVCMean, RetMean, EluMean, LysMean, LMMean, FTMean, W1Mean, W2Mean)
 Mean = as.data.frame(round(Mean))
 print(Mean)
-write.xlsx(Mean, "../Data/Mean.xlsx") #Export Mean values of plate
+
 ```
 
-###Standard Deviation
+### 3: Standard Deviation
 ```{r StDev}
 ###AVC SD
 Strain1 <- sd(myData[,1:2])
@@ -229,24 +249,23 @@ SD = rbind(AVCSD, RetSD, EluSD, LysSD, LMSD, FTSD, W1SD, W2SD)
 SD = as.data.frame(round(SD))
 
 print(SD)
-write.xlsx(SD, "../Data/SD.xlsx") #Export StDev values of plate
 
 ```
 
-
-###Coefficient of Variation
+### 4: Coefficient of Variation
 ```{r CV }
 
 CV = ((SD/Mean[,1:4])*100)
 CV = round(CV,2)
 print(CV)
-write.xlsx(CV, "../Data/CV.xlsx") #Export CV values of plate
+
 ```
 
-
-###Strain Specification
+### 5: Strain Specification
 Each positive control will have a pass or fail based on set specification output.
+If one strain does not pass, the test method failed.
 ```{r Signal}
+
 TMsignal = log(Mean[2,])/log(Mean[4,])
 
 TMsignal1 = TMsignal[,1:4]
@@ -264,32 +283,41 @@ colnames(TMResults)[2] <- "TMSpec"
 TMResults = as.data.frame(TMResults)
 print(TMResults)
 
-write.xlsx(TMResults, "../Data/TMResults.xlsx") #Export TMResults values of plate
 ```
 
-###Box Plot
-Plot showing distribution for each strain
-```{r Plot }
+### 6:Dot plot
+Plot showing RLU distribution for each strain
+```{r ggplot }
+## Looking at 4 positive strains
+
 M1 = Mean[1:4,1:4]
+df <- melt(M1)
 
-boxplot(M1,  main = "Strain Distribution",
-               ylab = "Max RLU",
-        col = c("Red", "Purple", "Green", "White"))
+df$rowid <- c('AVC', 'Retentate', 'Eluate', 'Lysate')
+P <- ggplot(df, aes(x = factor(variable), y = value)) + geom_jitter(width = 0.1, height = 0, 
+                                                           aes(color=factor(rowid))) + xlab("Strains") + ylab("RLU") + ggtitle("RLU Distribution") + theme(plot.title = element_text(hjust = 0.5)) +
+  labs(color='Samples') 
+
+print(P)
+
 
 ```
 
-### % Recovery graph
-Graph showing distribution of % recovery for each strain and sample will calculation output for each sample.
 
-```{r bargraph}
+### 7: % Recovery graph
+Graph showing distribution of % recovery for each strain and sample calculation output for each sample.
 
+```{r bargraph, fig.width=8, fig.height=5}
+
+#Elution Volumes
 EluVol = 0.045
 LysVol = 0.1
 LMVol = 0.2
 FTVol = 0.2
 W1Vol = 0.045
 W2Vol = 0.09
- 
+
+# % Recovery Calculations 
 M2 = Mean[3:8,1:4]
 L1 = M2[2,]*LysVol
 Lys = M2[2,]*LysVol/L1
@@ -301,19 +329,46 @@ Eluate = M2[1,]*EluVol/L1
 
 R1 = rbind(Lys, LM, FT, Wash1, Wash2, Eluate)
 R1 = round(R1,2)
-print(R1)
+R1 = R1*100
+R1 = round(R1, 0)
 
 Recovery = R1[-1,]
 Recovery = Recovery[-1,]
+
+Strain1 = sum(Recovery[1:4, 1])
+Strain2 = sum(Recovery[1:4, 2])
+Strain3 = sum(Recovery[1:4, 3])
+Strain4 = sum(Recovery[1:4, 4])
+
+Recovery1 = rbind(Strain1, Strain2, Strain3, Strain4)
+colnames(Recovery1)[1] <- "Sum"
+Recovery1 = t(Recovery1)
+
+Recovery2 = rbind(Recovery, Recovery1)
+print(Recovery2)
+
 Recovery = as.matrix(Recovery)
 
-barplot(Recovery, main = "% Recovery", xlab = "",
-        legend = rownames(Recovery),
+##Barplot
+barplot(Recovery, main = "% Recovery", 
+        xlab = "",
+        ylab = "Percentage",
+        legend.text = TRUE,
         col = c("Orange", "Green", "Forestgreen", "Blue"))
 
 
 ```
 
+### 8: Data Export
+Create a unique name identifier for saving files each time script is run. 
+Example:"../Data/Plate1_PeakValues.xlsx"
 
+```{r exports, echo = TRUE}
 
+write.xlsx(PeakValues, "../data/Plate2_PeakValues.xlsx") #Export max values of plate
+write.xlsx(Mean, "../data/Plate2_Mean.xlsx") #Export Mean values of plate
+write.xlsx(SD, "../data/Plate2_SD.xlsx") #Export StDev values of plate
+write.xlsx(CV, "../data/Plate2_CV.xlsx") #Export CV values of plate
+write.xlsx(TMResults, "../data/Plate2_TMResults.xlsx") #Export TMResults values of plate
 
+```
