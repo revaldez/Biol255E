@@ -360,15 +360,16 @@ barplot(Recovery, main = "% Recovery",
 ```
 
 ### 8: Data Export
-Create a unique name identifier for saving files each time script is run. 
-Example:"../Data/Plate1_PeakValues.xlsx"
+The file name will be pulled from the .txt file and input into the five files to be exported with each of those files unique identifiers. 
 
 ```{r exports, echo = TRUE}
 
-write.xlsx(PeakValues, "../data/Plate2_PeakValues.xlsx") #Export max values of plate
-write.xlsx(Mean, "../data/Plate2_Mean.xlsx") #Export Mean values of plate
-write.xlsx(SD, "../data/Plate2_SD.xlsx") #Export StDev values of plate
-write.xlsx(CV, "../data/Plate2_CV.xlsx") #Export CV values of plate
-write.xlsx(TMResults, "../data/Plate2_TMResults.xlsx") #Export TMResults values of plate
+plate <- substr(basename(spec), 1, nchar(basename(spec)) - 4) 
+name <- paste0("../data/", plate)
 
-```
+write.xlsx(PeakValues, file = paste0(name, "_PeakValues.xlsx")) #Export max values of plate
+write.xlsx(Mean, file = paste0(name, "_Mean.xlsx")) #Export Mean values of plate
+write.xlsx(SD, file = paste0(name, "_StDev.xlsx")) #Export StDev values of plate
+write.xlsx(CV, file = paste0(name, "_CV.xlsx")) #Export CV values of plate
+write.xlsx(TMResults, file = paste0(name, "_TMResults.xlsx")) #Export TMResults values of plate
+
